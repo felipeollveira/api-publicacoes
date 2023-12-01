@@ -14,7 +14,7 @@ server.use(cors());
 
 
 
-server.get('/api', async (req, res) => {
+server.get('/', async (req, res) => {
     try {
       const posts = await knex('post').select('*');
       return res.status(200).json({ posts });
