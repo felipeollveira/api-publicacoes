@@ -1,27 +1,28 @@
 const express = require('express');
-const root = require('./rotas');
-const session = require('express-session');
+const session = require('express-session')
 const server = express();
 const cors = require('cors');
-const { join } = require('path');
+const knex = require('./sql/connect')
+require('dotenv').config()
 const sessionSecret = process.env.private_key
-
-
-
-
 
 
 server.use(session({ secret: sessionSecret, resave: true, saveUninitialized: true }));
 
 
-server.use(express.static(__dirname + '/middles'));
-server.use(express.static(__dirname + '/public'));
-server.use(express.json())
-
-server.use('/static', express.static(join("views/")))
-
 server.use(cors());
-server.use(root) // rotas
+
+
+
+server.get('/api', async (req, res) => {
+    try {
+      const posts = await knex('post').select('*');
+      return res.status(200).json({ posts });
+    } catch (error) {
+      console.error('Erro ao obter posts:', error.message);
+      return res.status(500).json({ error: 'Erro ao obter posts' });
+    }
+  });
 
 // Iniciand o servidor
 const PORT = process.env.PORT || 3000; 
