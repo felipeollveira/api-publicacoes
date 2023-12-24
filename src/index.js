@@ -1,39 +1,58 @@
 const express = require('express');
-const session = require('express-session')
-const server = express();
-const {MongoClient} = require('mongodb');
-const cors = require('cors');
-let port = 3400;
-
+const mongoose = require('mongoose');
+const cors = require('cors')
+const app = express();
+const PORT = process.env.PORT || 3000;
 require('dotenv').config()
-const sessionSecret = process.env.private_key
-server.use(session({ secret: sessionSecret, resave: true, saveUninitialized: true }));
 
-const uri = process.env.MONGO_URI
-const client = new MongoClient( uri );
-
-server.use(cors());
-
-server.get('/', async (req, res) => {
+app.use(cors())
+const connectDB = async () => {
   try {
-    const posts = await client.db('publicacoes')
-      .collection('posts')
-      .find({}) 
-      .toArray();
+    const conn = await mongoose.connect(process.env.MONGO_URI)
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error.message);
+    process.exit(1);
+  }
+};
 
+// Definindo o esquema
+const postSchema = new mongoose.Schema({
+  titulo: String,
+  introducao: String,
+  desenvolvimento: String,
+  conclusao: String,
+  data: {
+    type: Date,
+    default: Date.now,
+  },
+  autor: String,
+  images: String,
+});
+
+// Criando o modelo usando o esquema
+const Post = mongoose.model('Post', postSchema);
+
+// Rota para retornar os dados da coleção 'posts'
+app.get('/', async (req, res) => {
+  try {
+    // Encontrar todos os documentos na coleção 'posts'
+    const posts = await Post.find({});
     return res.json({ posts });
   } catch (error) {
-    console.error('posts error', error.message);
-    return res.status(500).json({ error: 'Erro ao obter posts' });
+    console.error('Error retrieving posts:', error.message);
+    return res.status(500).json({ error: 'Error retrieving posts' });
   }
 });
 
-
-
-// Iniciand o servidor
-const PORT = 3000; 
-server.listen(PORT, () => {
-  console.log(`Servidor iniciado na porta ${PORT}`);
+// Rota padrão
+app.all('*', (req, res) => {
+  res.json({ "everything": "is awesome" });
 });
 
-console.log(`http://localhost:${PORT}/`)
+// Conectar-se ao banco de dados antes de escutar
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Listening for requests on port ${PORT}`);
+  });
+});
