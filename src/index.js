@@ -37,7 +37,7 @@ connectDB().then(() => {
   });
 
   // Iniciar o servidor após a conexão ao MongoDB
-  app.listen(PORT, () => {
+  app.listen(3000, () => {
     console.log(`Listening for requests on port ${PORT}`);
   });
 });
