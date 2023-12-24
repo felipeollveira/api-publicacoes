@@ -2,11 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 require('dotenv').config();
 
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || '*', // Substitua '*' pela origem específica do seu frontend em produção
+  origin: process.env.FRONTEND_ORIGIN || '*', 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
@@ -14,10 +14,7 @@ app.use(cors({
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB Connected');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
