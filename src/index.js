@@ -1,42 +1,34 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors')
+const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3400;
-require('dotenv').config()
+const PORT = process.env.PORT || 3000;
+require('dotenv').config();
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_ORIGIN || '*', // Substitua '*' pela origem específica do seu frontend em produção
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+}));
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI)
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Connected');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
     process.exit(1);
   }
 };
 
-// Definindo o esquema
-const postSchema = new mongoose.Schema({
-  titulo: String,
-  introducao: String,
-  desenvolvimento: String,
-  conclusao: String,
-  data: {
-    type: Date,
-    default: Date.now,
-  },
-  autor: String,
-  images: String,
-});
+const Post = require('./models/posts');
 
-// Criando o modelo usando o esquema
-const Post = mongoose.model('Post', postSchema);
-
-// Rota para retornar os dados da coleção 'posts'
 app.get('/', async (req, res) => {
   try {
-    // Encontrar todos os documentos na coleção 'posts'
     const posts = await Post.find({});
     return res.json({ posts });
   } catch (error) {
