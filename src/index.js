@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const Post = require('./models/posts')
 require('dotenv').config();
 
 app.use(cors({
@@ -24,22 +25,6 @@ const connectDB = async () => {
 
 // Conectar-se ao MongoDB antes de iniciar o servidor
 connectDB().then(() => {
-  // Definindo o esquema e modelo após a conexão estar estabelecida
-  const postSchema = new mongoose.Schema({
-    titulo: String,
-    introducao: String,
-    desenvolvimento: String,
-    conclusao: String,
-    data: {
-      type: Date,
-      default: Date.now,
-    },
-    autor: String,
-    images: String,
-  });
-
-  const Post = mongoose.model('Post', postSchema);
-
   // Rota para retornar os dados da coleção 'posts'
   app.get('/', async (req, res) => {
     try {
