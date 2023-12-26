@@ -5,48 +5,42 @@ const helmet = require('helmet');
 const app = express();
 require('dotenv').config();
 
+const {run} = require('./sql/connect');
+
+const path = require('path');
+const fs = require('fs').promises;
+const { criarArquivoJSON } = require('./api/api');
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-
-const client = new MongoClient(process.env.MONGODB_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function run() {
-  try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log("Você se conectou com sucesso ao MongoDB!");
-  } catch (error) {
-    console.error('Erro ao conectar ao MongoDB:', error.message);
-
-  }
-}
-
 app.get('/', async (req, res) => {
   try {
+    const filePath = path.join(__dirname, './scratch/posts.json');
+    const jsonData = await fs.readFile(filePath, 'utf8');
 
-    const db = client.db('posts');
-    const collection = db.collection('pubs');
+    if (!jsonData.trim()) {
+      console.error('O arquivo JSON está vazio.');
+      res.status(500).json({ error: 'Erro ao obter dados da API.' });
+      return;
+    }
 
-    const posts = await collection.find({}).toArray();
+    const posts = JSON.parse(jsonData);
 
-    return res.json({ posts });
+    
+
+    res.json({ posts });
   } catch (error) {
-    console.error('Erro ao recuperar os posts:', error.message);
-    return res.status(500).json({ error: 'Erro ao recuperar os posts' });
+    console.error('Erro ao ler o arquivo JSON:', error);
+    res.status(500).json({ error: 'Erro ao obter dados da API.' });
   }
 });
 
 run().then(() => {
   app.listen(PORT, () => {
-    console.log(`Servidor Express iniciado na porta ${PORT}`);
+    criarArquivoJSON()
+    console.log(`Servidor Express iniciado na porta ${PORT}`); 
+    
   });
 }).catch(console.dir);
