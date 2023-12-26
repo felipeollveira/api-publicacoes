@@ -11,7 +11,7 @@ app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const client = new MongoClient(process.env.MONGO_URI, {
+const client = new MongoClient(process.env.MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -33,8 +33,8 @@ async function run() {
 app.get('/', async (req, res) => {
   try {
 
-    const db = client.db('pub');
-    const collection = db.collection('posts');
+    const db = client.db('posts');
+    const collection = db.collection('pubs');
 
     const posts = await collection.find({}).toArray();
 
