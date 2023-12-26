@@ -1,29 +1,37 @@
+
+const PORT = process.env.PORT || 3000;
+
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
-const { check, validationResult } = require('express-validator');
+const app = express()
 require('dotenv').config()
-const app = express();
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const PORT = process.env.PORT || 3000;
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || '*';
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB Connected');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error.message);
-    process.exit(1);
+const client = new MongoClient(process.env.MONGO_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
   }
-};
+});
 
-// Routes
+async function run() {
+  try {
+    await client.connect();
+    await client.db("admin").command({ ping: 1 });
+    console.log("Você se conectou com sucesso ao MongoDB!");
+  } finally {
+    // await client.close();
+  }
+}
+
 app.get('/', async (req, res) => {
   try {
     const posts = await Post.find({});
@@ -34,9 +42,9 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Connect to MongoDB before starting the server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Listening for requests on port ${PORT}`);
+run().then(() => {
+  app.listen(3000, () => {
+    console.log('Servidor Express iniciado na porta 3000');
   });
-});
+}).catch(console.dir);
+
