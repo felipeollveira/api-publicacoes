@@ -1,17 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const { check, validationResult } = require('express-validator');
+require('dotenv').config()
 const app = express();
-const PORT = process.env.PORT || 3000;
-const Post = require('./models/posts')
-require('dotenv').config();
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
 
-app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || '*', 
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  optionsSuccessStatus: 204,
-}));
+
+const PORT = process.env.PORT || 3000;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || '*';
 
 const connectDB = async () => {
   try {
@@ -23,21 +23,20 @@ const connectDB = async () => {
   }
 };
 
-// Conectar-se ao MongoDB antes de iniciar o servidor
-connectDB().then(() => {
-  // Rota para retornar os dados da coleção 'posts'
-  app.get('/', async (req, res) => {
-    try {
-      const posts = await Post.find({});
-      return res.json({ posts });
-    } catch (error) {
-      console.error('Error retrieving posts:', error.message);
-      return res.status(500).json({ error: 'Error retrieving posts' });
-    }
-  });
+// Routes
+app.get('/', async (req, res) => {
+  try {
+    const posts = await Post.find({});
+    return res.json({ posts });
+  } catch (error) {
+    console.error('Error retrieving posts:', error.message);
+    return res.status(500).json({ error: 'Error retrieving posts' });
+  }
+});
 
-  // Iniciar o servidor após a conexão ao MongoDB
-  app.listen(3000, () => {
+// Connect to MongoDB before starting the server
+connectDB().then(() => {
+  app.listen(PORT, () => {
     console.log(`Listening for requests on port ${PORT}`);
   });
 });
