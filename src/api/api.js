@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const { client } = require('../sql/connect');
+const { exec } = require('child_process');
 
 async function buscarTodosOsPosts() {
   try {
@@ -92,9 +93,8 @@ async function executaOperacoes() {
   await criarOuAtualizarArquivoJSON();
 }
 
-// Chama a função principal
-executaOperacoes();
+
 
 module.exports = {
-  criarOuAtualizarArquivoJSON,
+  executaOperacoes,
 };

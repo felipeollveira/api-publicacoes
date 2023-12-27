@@ -9,7 +9,7 @@ const {run} = require('./sql/connect');
 
 const path = require('path');
 const fs = require('fs').promises;
-const { criarArquivoJSON } = require('./api/api');
+const { executaOperacoes } = require('./api/api');
 
 app.use(helmet());
 app.use(cors());
@@ -29,8 +29,8 @@ app.get('/', async (req, res) => {
     const posts = JSON.parse(jsonData);
 
     
+    res.json({ posts: posts.posts });
 
-    res.json({ posts });
   } catch (error) {
     console.error('Erro ao ler o arquivo JSON:', error);
     res.status(500).json({ error: 'Erro ao obter dados da API.' });
@@ -39,7 +39,7 @@ app.get('/', async (req, res) => {
 
 run().then(() => {
   app.listen(PORT, () => {
-    criarArquivoJSON()
+    executaOperacoes()
     console.log(`Servidor Express iniciado na porta ${PORT}`); 
     
   });
