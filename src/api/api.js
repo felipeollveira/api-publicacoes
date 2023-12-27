@@ -15,7 +15,8 @@ async function buscarTodosOsPosts() {
 
     const posts = await collection.find({}).toArray();
     const version = await versionCollection.findOne();
-
+    const data = { posts, version }
+    jsonPraApi(data)
     return { posts, version };
   } catch (error) {
     console.error('Erro ao recuperar os posts:', error.message);
@@ -26,6 +27,30 @@ async function buscarTodosOsPosts() {
     }
   }
 }
+
+async function jsonPraApi(data) {
+  try {
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data }),
+    };
+
+    const response = await fetch('http://localhost:3000', requestOptions);
+
+    if (!response.ok) {
+      throw new Error('Erro ao enviar dados para o servidor.');
+    }
+
+    console.log('Dados enviados com sucesso para o servidor local.');
+  } catch (error) {
+    console.error('Erro ao processar os dados:', error.message);
+  }
+}
+
 
 async function criarOuAtualizarArquivoJSON() {
   try {
@@ -47,6 +72,7 @@ async function criarOuAtualizarArquivoJSON() {
           return;
         } else {
           await fs.writeFile(caminhoArquivo, jsonData, 'utf8');
+          jsonPraApi(posts)
           console.log(`Versão da API atualizada para: [v.${version._id.vr}]`);
           return;
         }

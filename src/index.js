@@ -38,7 +38,7 @@ app.get('/', async (req, res) => {
 });
 
 run().then(() => {
-  app.listen(PORT, () => {
+  app.listen(4000, () => {
     executaOperacoes()
     console.log(`Servidor Express iniciado na porta ${PORT}`); 
     
