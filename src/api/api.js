@@ -15,8 +15,8 @@ async function buscarTodosOsPosts() {
 
     const posts = await collection.find({}).toArray();
     const version = await versionCollection.findOne();
-    const data = { posts, version }
-    jsonPraApi(data)
+    //const data = { posts, version }
+    //jsonPraApi(data)
     return { posts, version };
   } catch (error) {
     console.error('Erro ao recuperar os posts:', error.message);
@@ -39,7 +39,7 @@ async function jsonPraApi(data) {
       body: JSON.stringify({ data }),
     };
 
-    const response = await fetch('http://localhost:3000', requestOptions);
+    const response = await fetch(null, requestOptions);
 
     if (!response.ok) {
       throw new Error('Erro ao enviar dados para o servidor.');
