@@ -38,7 +38,7 @@ async function jsonPraApi(data) {
       },
       body: JSON.stringify({ data }),
     };
-
+    // pensar em alguma alternativa para um json ao blog
     const response = await fetch(null, requestOptions);
 
     if (!response.ok) {
@@ -67,13 +67,13 @@ async function criarOuAtualizarArquivoJSON() {
       try {
         const existingVersion = await lerVersaoDoArquivo();
 
-        if (existingVersion === version._id.vr) {
+        if (existingVersion === version.v) {
           console.log(`Versão da API OK [v.${existingVersion}]`);
           return;
         } else {
           await fs.writeFile(caminhoArquivo, jsonData, 'utf8');
           jsonPraApi(posts)
-          console.log(`Versão da API atualizada para: [v.${version._id.vr}]`);
+          console.log(`Versão da API atualizada para: [v${version.v}]`);
           return;
         }
       } catch (error) {
@@ -86,7 +86,7 @@ async function criarOuAtualizarArquivoJSON() {
     await fs.mkdir(diretorio, { recursive: true });
     await fs.writeFile(caminhoArquivo, jsonData, 'utf8');
 
-    console.log(`Arquivo JSON criado na versão [v${version._id.vr}]`);
+    console.log(`Arquivo JSON criado na versão [v${version.v}]`);
   } catch (error) {
     console.error('Erro ao criar ou atualizar o arquivo JSON:', error.message);
     throw error;
@@ -102,7 +102,7 @@ async function lerVersaoDoArquivo() {
       const dados = JSON.parse(conteudoArquivo);
       const versao = dados.version;
 
-      const actVersion = versao && versao._id && versao._id.vr;
+      const actVersion = versao && versao._id && versao.v;
       return actVersion;
     } else {
       console.log('Arquivo JSON não existe ou está vazio.');
@@ -117,6 +117,7 @@ async function lerVersaoDoArquivo() {
 
 async function executaOperacoes() {
   await criarOuAtualizarArquivoJSON();
+  
 }
 
 
