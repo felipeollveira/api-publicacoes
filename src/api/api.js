@@ -15,9 +15,8 @@ async function buscarTodosOsPosts() {
 
     const posts = await collection.find({}).toArray();
     const version = await versionCollection.findOne();
-    //const data = { posts, version }
-    //jsonPraApi(data)
-    return { posts, version };
+
+    return { posts, version }
   } catch (error) {
     console.error('Erro ao recuperar os posts:', error.message);
     throw new Error('Erro ao recuperar os posts');
@@ -124,4 +123,5 @@ async function executaOperacoes() {
 
 module.exports = {
   executaOperacoes,
+  buscarTodosOsPosts,
 };

@@ -26,7 +26,7 @@ app.get('/', async (req, res) => {
       res.status(500).json({ error: 'Erro ao obter dados da API.' });
       return;
     }
-
+    //executaOperacoes()
     const posts = JSON.parse(jsonData);
 
     
