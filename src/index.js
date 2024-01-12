@@ -1,54 +1,43 @@
 const PORT = process.env.PORT || 3000;
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
+
+const { client } = require('./sql/connect');
+
 const app = express();
 require('dotenv').config();
 
 const {run} = require('./sql/connect');
 
-const path = require('path');
-const fs = require('fs').promises;
-const { executaOperacoes } = require('./api/api');
 
-app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
 app.get('/', async (req, res) => {
- 
   try {
-    const filePath = path.join(__dirname, './scratch/posts.json');
-    const jsonData = await fs.readFile(filePath, 'utf8');
+    const db = client.db('posts');
+    const collection = db.collection('pubs');
+    const versionCollection = db.collection('version');
 
-    if (!jsonData.trim()) {
-      console.error('O arquivo JSON está vazio.');
-      res.status(500).json({ error: 'Erro ao obter dados da API.' });
-      return;
-    }
-    //executaOperacoes()
-    const posts = JSON.parse(jsonData);
+    const posts = await collection.find({}).toArray();
+    const version = await versionCollection.findOne();
 
-    
-    res.json({ posts });
-
+    return res.status(200).json({ posts, version });
+  
   } catch (error) {
-    console.error('Erro ao ler o arquivo JSON:', error);
-    res.status(500).json({ error: 'Erro ao obter dados da API.' });
+    console.error('Erro ao recuperar os posts:', error.message);
+    return res.status(500).send('Erro ao recuperar os posts');
+  } finally {
+    if (client) {
+      await client.close();
+    }
   }
-});
-
-app.post('/', async (req,res) =>{
-  const {key} = req.body
-  if(key){
-    executaOperacoes()
-  } 
-})
+}
+);
 
 run().then(() => {
   app.listen(4000, () => {
-   executaOperacoes()
-    console.log(`Servidor Express iniciado na porta ${PORT}`); 
+  console.log(`Servidor Express iniciado na porta ${PORT}`); 
     
   });
 }).catch(console.dir);

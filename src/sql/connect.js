@@ -24,5 +24,4 @@ async function run() {
 
 module.exports = {
     run,
-    client,
   };
