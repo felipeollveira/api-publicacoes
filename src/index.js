@@ -41,14 +41,13 @@ app.get('/', async (req, res) => {
 app.post('/', async (req,res) =>{
   const {key} = req.body
   if(key){
-    console.log(key)
     executaOperacoes()
   } 
 })
 
 run().then(() => {
   app.listen(4000, () => {
-   //executaOperacoes()
+   executaOperacoes()
     console.log(`Servidor Express iniciado na porta ${PORT}`); 
     
   });
