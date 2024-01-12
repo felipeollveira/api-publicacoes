@@ -15,6 +15,7 @@ app.use(express.json());
 
 app.get('/', async (req, res) => {
   try {
+    await client.connect();
     const db = client.db('posts');
     const collection = db.collection('pubs');
     const versionCollection = db.collection('version');
