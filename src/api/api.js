@@ -38,7 +38,7 @@ async function jsonPraApi(data) {
       body: JSON.stringify({ data }),
     };
     // pensar em alguma alternativa para um json ao blog
-    const response = await fetch(null, requestOptions);
+    const response = await fetch('https://api-blog-sage.vercel.app', requestOptions);
 
     if (!response.ok) {
       throw new Error('Erro ao enviar dados para o servidor.');
