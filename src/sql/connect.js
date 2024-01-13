@@ -31,6 +31,8 @@ async function buscarTodosOsPosts() {
     const posts = await collection.find({}).toArray();
     const version = await versionCollection.findOne();
 
+
+
     return { posts, version };
   
   } catch (error) {

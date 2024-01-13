@@ -15,8 +15,8 @@ app.use(express.json());
 
 app.get('/', async (req, res) => {
   try {
-    const result = await buscarTodosOsPosts()
-    return res.json(result);
+    const { posts, version } = await buscarTodosOsPosts();
+    return res.json({ posts, version : version.v });
   } catch (error) {
     console.error('Erro na rota:', error.message);
     return res.status(500).json({ error: 'Erro na rota' });
