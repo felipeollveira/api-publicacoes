@@ -22,6 +22,28 @@ async function run() {
 }
 
 
+async function buscarTodosOsPosts() {
+  try {
+    const db = client.db('posts');
+    const collection = db.collection('pubs');
+    const versionCollection = db.collection('version');
+
+    const posts = await collection.find({}).toArray();
+    const version = await versionCollection.findOne();
+
+    return { posts, version };
+  
+  } catch (error) {
+    console.error('Erro ao recuperar os posts:', error.message);
+    throw new Error('Erro ao recuperar os posts');
+  } 
+  }
+
+
+
+
+
 module.exports = {
     run,
+    buscarTodosOsPosts
   };

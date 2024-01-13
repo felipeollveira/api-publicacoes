@@ -2,12 +2,12 @@ const PORT = process.env.PORT || 3000;
 const express = require('express');
 const cors = require('cors');
 
-const { client } = require('./sql/connect');
 
 const app = express();
 require('dotenv').config();
 
-const {run} = require('./sql/connect');
+const {run, buscarTodosOsPosts} = require('./sql/connect');
+
 
 
 app.use(cors());
@@ -15,26 +15,14 @@ app.use(express.json());
 
 app.get('/', async (req, res) => {
   try {
-    await client.connect();
-    const db = client.db('posts');
-    const collection = db.collection('pubs');
-    const versionCollection = db.collection('version');
-
-    const posts = await collection.find({}).toArray();
-    const version = await versionCollection.findOne();
-
-    return res.status(200).json({ posts, version });
-  
+    const result = await buscarTodosOsPosts()
+    return res.json(result);
   } catch (error) {
-    console.error('Erro ao recuperar os posts:', error.message);
-    return res.status(500).send('Erro ao recuperar os posts');
-  } finally {
-    if (client) {
-      await client.close();
-    }
+    console.error('Erro na rota:', error.message);
+    return res.status(500).json({ error: 'Erro na rota' });
   }
-}
-);
+});
+
 
 run().then(() => {
   app.listen(4000, () => {
