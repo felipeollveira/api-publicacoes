@@ -9,10 +9,10 @@ function logAccess(req, res, next) {
   const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
   if (!allowedOrigins.includes(origin)) {
     console.error(`Tentativa de acesso bloqueada - Origem: ${origin}, IP: ${ip}`);
-    return res.status(403).send('Acesso não permitido por CORS'); 
+    return res.status(403).json({ error: 'Acesso não permitido.' })
   }
 
-  next(); // Passa para o próximo middleware
+  next(); 
 }
 
 // Configuração do CORS
