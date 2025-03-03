@@ -3,13 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require('dotenv').config();
-const corsOptions = require('./api/cors-control')
+const {corsOptions, logAccess} = require('./api/cors-control')
 const { run, buscarTodosOsPosts } = require('./sql/connect');
 
 
-
+app.use(logAccess)
 app.use(express.json());
-
 app.use(cors(corsOptions));
 
 
