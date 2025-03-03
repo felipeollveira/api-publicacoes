@@ -1,7 +1,7 @@
 {
-  "name": "post",
+  "name": "blog_api",
   "version": "1.0.0",
-  "description": "posto as noticias por aqui",
+  "description": "blog_api",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index",
